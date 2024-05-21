@@ -64,6 +64,15 @@ export class TodoService {
         }
     }
 
+    async editTodo(id: string, data: CreateTodoDto, user: UserEntity) {
+        try {
+            const checkUpdate = await this.repository.update({id, user: user}, data);
+            if (checkUpdate.affected) return await this.repository.findOne({where: {id: id}});
+        } catch (err) {
+            throw new InternalServerErrorException('something went wrong cannot update todo');
+        }
+    }
+
     async delete(id: string, user: UserEntity) {
         try {
             return await this.repository.delete({id: id, user: user});

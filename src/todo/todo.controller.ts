@@ -37,6 +37,15 @@ export class TodoController {
         return this.todoService.updateTodo(id, status, user);
     }
 
+    @Patch('edit/:id')
+    editTodo(
+        @Param('id') id: string,
+        @Body() data: CreateTodoDto,
+        @User() user: UserEntity
+    ) {
+        return this.todoService.editTodo(id, data, user);
+    }
+
     @Delete(':id')
     deleteTodo(@Param('id') id: string, @User() user: UserEntity) {
         return this.todoService.delete(id, user);
