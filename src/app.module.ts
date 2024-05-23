@@ -1,35 +1,23 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
-
-const ormOptions: TypeOrmModuleOptions = {
-  type: 'mysql',
-  host: '127.0.0.1',
-  port: 3306,
-  username: 'root',
-  password: '12345678',
-  database: 'nestjs',
-  autoLoadEntities: true,
-  synchronize: true
-};
-
-// const ormOptions: TypeOrmModuleOptions = {
-//   type: 'mysql',
-//   host: '147.50.231.83',
-//   port: 3306,
-//   username: 'tamkanitnon',
-//   password: 'P@ssword1234',
-//   database: 'nestjs',
-//   autoLoadEntities: true,
-//   synchronize: true
-// };
+import { ConfigModule } from '@nestjs/config';
+import ormConfig from './config/orm.config';
+import ormConfigProd from './config/orm.config.prod';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(ormOptions),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [ormConfig],
+      expandVariables: true
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: process.env.npm_lifecycle_event === 'start:prod' ? ormConfigProd : ormConfig
+    }),
     AuthModule,
     TodoModule,
   ],
